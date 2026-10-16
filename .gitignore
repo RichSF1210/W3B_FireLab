@@ -1,0 +1,23 @@
+# Unity rebuilds these
+/[Ll]ibrary/
+/[Tt]emp/
+/[Ll]ogs/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Uu]ser[Ss]ettings/
+/[Mm]emoryCaptures/
+*.csproj
+*.sln
+*.pidb
+*.userprefs
+.DS_Store
+.vs/
+.idea/
+
+# Demo videos (large; kept in the FHEA folder)
+/Recordings/
+
+# Steam Audio 4.7.0: import it yourself, as in Week 2 Lab B (see README)
+/Assets/Plugins/SteamAudio/
+/Assets/Plugins/SteamAudio.meta
