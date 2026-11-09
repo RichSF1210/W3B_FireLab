@@ -14,7 +14,7 @@ public class DemoAutopilot : MonoBehaviour
     int step = -1;
 
     // Seconds on each of the 10 steps.
-    readonly float[] durations = { 8f, 12f, 8f, 16f, 12f, 8f, 8f, 8f, 16f, 14f, 30f };
+    readonly float[] durations = { 8f, 16f, 12f, 8f, 12f, 8f, 8f, 8f, 16f, 14f, 30f };
 
     void Start()
     {
@@ -48,15 +48,15 @@ public class DemoAutopilot : MonoBehaviour
         if (root == null) return;
         switch (i)
         {
-            case 1: root.GetComponent<IntensityController>().intensity = Mathf.Sin(p * Mathf.PI) * 0.9f + 0.1f; break;
-            case 2: root.GetComponent<SineDemo>().frequency = Mathf.Lerp(220f, 660f, Mathf.Sin(p * Mathf.PI)); break;
-            case 3: // digital: bit depth down to 2, then sample hold up
+            case 4: root.GetComponent<IntensityController>().intensity = Mathf.Sin(p * Mathf.PI) * 0.9f + 0.1f; break;
+            case 0: root.GetComponent<SineDemo>().frequency = Mathf.Lerp(220f, 660f, Mathf.Sin(p * Mathf.PI)); break;
+            case 1: // digital: bit depth down to 2, then sample hold up
                 var s = root.GetComponent<SineDemo>();
                 s.frequency = 220f;
                 s.bitDepth = p < 0.5f ? Mathf.RoundToInt(Mathf.Lerp(16f, 2f, p * 2f)) : 16;
                 s.holdSamples = p < 0.5f ? 1 : Mathf.RoundToInt(Mathf.Lerp(1f, 40f, (p - 0.5f) * 2f));
                 break;
-            case 4:
+            case 2:
                 var n = root.GetComponent<NoiseDemo>();
                 n.noiseMix = Mathf.Clamp01(p * 4f);
                 n.highPass = p > 0.7f;
@@ -69,10 +69,10 @@ public class DemoAutopilot : MonoBehaviour
                 f.intensity = p < 0.55f ? 0.5f : Mathf.Sin((p - 0.55f) / 0.45f * Mathf.PI) * 0.9f + 0.05f;
                 break;
             case 9:
-                var e = root.GetComponentInChildren<EventLayer>();
+                var e = root.GetComponentInChildren<BurstLayer>();
                 var nl = root.GetComponentInChildren<NoiseLayer>();
                 if (nl != null) nl.cutoff = Mathf.Lerp(150f, 3000f, Mathf.Clamp01(p * 2f));
-                if (e != null) { e.eventsPerSecond = Mathf.Lerp(1f, 40f, Mathf.Clamp01(p * 2f - 1f)); }
+                if (e != null) { e.burstsPerSecond = Mathf.Lerp(1f, 40f, Mathf.Clamp01(p * 2f - 1f)); }
                 break;
         }
     }

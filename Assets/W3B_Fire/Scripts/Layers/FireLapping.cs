@@ -1,7 +1,7 @@
 using UnityEngine;
 
 // =====================================================================
-// FireLapping  (CODE route, finished version)
+// FireLapping  (PART B: PROCEDURAL, finished version)
 // FARNELL'S LAYER 3: LAPPING, the low roar of moving flame.
 // RECIPE: white noise -> keep only the lows (two low-pass filters) ->
 //   a slow random swell so it breathes.

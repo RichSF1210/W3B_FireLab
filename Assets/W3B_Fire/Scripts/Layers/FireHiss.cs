@@ -1,7 +1,7 @@
 using UnityEngine;
 
 // =====================================================================
-// FireHiss  (CODE route, finished version)
+// FireHiss  (PART B: PROCEDURAL, finished version)
 // FARNELL'S LAYER 1: HISSING, gas escaping from the burning fuel.
 // RECIPE: white noise -> remove the lows (high-pass) -> slow wobble in level.
 // WHAT IS DYNAMIC HERE: it is generated live, so it never repeats; intensity

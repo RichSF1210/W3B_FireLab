@@ -1,7 +1,7 @@
 using UnityEngine;
 
 // =====================================================================
-// SampleOneShotLayer  (RECORDINGS route: no code needed)
+// SampleOneShotLayer  (PART A: RECORDED. No code needed.)
 // USE FOR: short one-off sounds, e.g. your crackles or pops.
 // HOW: add to an object with an Audio Source, drag several clips into Clips.
 // WHAT IS DYNAMIC HERE (this is how game audio hides repetition):

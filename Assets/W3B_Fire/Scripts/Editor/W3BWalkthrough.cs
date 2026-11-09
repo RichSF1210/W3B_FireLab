@@ -39,7 +39,7 @@ public static class W3BWalkthrough
     [MenuItem("W3B/Walkthrough/2 An empty layer")]
     static void S2() { Show(Layer(2)); }
 
-    [MenuItem("W3B/Walkthrough/3 Route 1: MyRandomPlayer with clips")]
+    [MenuItem("W3B/Walkthrough/3 Part A: MyRandomPlayer with clips")]
     static void S3()
     {
         var l = Layer(2);
@@ -48,7 +48,7 @@ public static class W3BWalkthrough
         Show(l);
     }
 
-    [MenuItem("W3B/Walkthrough/4 Route 1: SampleLoopLayer with a loop")]
+    [MenuItem("W3B/Walkthrough/4 Part A: SampleLoopLayer with a loop")]
     static void S4()
     {
         var l = Layer(1);
@@ -57,7 +57,7 @@ public static class W3BWalkthrough
         Show(l);
     }
 
-    [MenuItem("W3B/Walkthrough/5 Route 2: NoiseLayer")]
+    [MenuItem("W3B/Walkthrough/5 Part B: NoiseLayer")]
     static void S5()
     {
         EditorSceneManager.OpenScene(Shell);
@@ -66,21 +66,21 @@ public static class W3BWalkthrough
         Show(Layer(3));
     }
 
-    [MenuItem("W3B/Walkthrough/6 Route 2: EventLayer")]
+    [MenuItem("W3B/Walkthrough/6 Part B: BurstLayer")]
     static void S6()
     {
-        var e = Layer(2).GetComponent<EventLayer>(); if (e == null) e = Layer(2).AddComponent<EventLayer>();
-        e.eventsPerSecond = 8f; e.eventLength = 3f; e.brightness = 2500f; e.variation = 0.7f;
+        var e = Layer(2).GetComponent<BurstLayer>(); if (e == null) e = Layer(2).AddComponent<BurstLayer>();
+        e.burstsPerSecond = 8f; e.burstLength = 3f; e.brightness = 2500f; e.variation = 0.7f;
         Show(Layer(2));
     }
 
-    [MenuItem("W3B/Walkthrough/7 Route 2: MyDynamicLink on the Campfire")]
+    [MenuItem("W3B/Walkthrough/7 Part B: MyDynamicLink on the Campfire")]
     static void S7()
     {
         var f = Fire();
         var link = f.GetComponent<MyDynamicLink>(); if (link == null) link = f.AddComponent<MyDynamicLink>();
         link.fire = f.GetComponent<FireController>();
-        link.eventLayer = Layer(2).GetComponent<EventLayer>();
+        link.burstLayer = Layer(2).GetComponent<BurstLayer>();
         link.noiseLayer = Layer(3).GetComponent<NoiseLayer>();
         Show(f);
     }

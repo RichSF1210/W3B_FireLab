@@ -1,7 +1,7 @@
 using UnityEngine;
 
 // =====================================================================
-// FireCrackle  (CODE route, finished version)
+// FireCrackle  (PART B: PROCEDURAL, finished version)
 // FARNELL'S LAYER 2: CRACKLING, sap and fuel bursting.
 // RECIPE: at random moments, a very short burst of noise that dies fast
 //   (1 to 6 milliseconds). Sometimes one crackle sets off another (clusters).

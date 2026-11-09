@@ -1,7 +1,7 @@
 using UnityEngine;
 
 // =====================================================================
-// SampleLoopLayer  (RECORDINGS route: no code needed)
+// SampleLoopLayer  (PART A: RECORDED. No code needed.)
 // USE FOR: a looping bed, e.g. your hiss or lapping recording.
 // HOW: add to an object with an Audio Source, drag your loop into AudioClip.
 // WHAT IS DYNAMIC HERE (the recording never changes, the playback does):

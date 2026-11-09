@@ -121,11 +121,11 @@ public class DemoSequencer : MonoBehaviour
             n.wobbleDepth = Slider("Noise layer: wobble", n.wobbleDepth, 0f, 1f);
             n.level = Slider("Noise layer: level", n.level, 0f, 1f);
         }
-        foreach (var e in root.GetComponentsInChildren<EventLayer>())
+        foreach (var e in root.GetComponentsInChildren<BurstLayer>())
         {
-            e.eventsPerSecond = Slider("Event layer: events per second", e.eventsPerSecond, 0.2f, 80f);
-            e.eventLength = Slider("Event layer: length (ms)", e.eventLength, 0.5f, 50f);
-            e.brightness = Slider("Event layer: brightness (Hz)", e.brightness, 100f, 12000f);
+            e.burstsPerSecond = Slider("Burst layer: bursts per second", e.burstsPerSecond, 0.2f, 80f);
+            e.burstLength = Slider("Burst layer: length (ms)", e.burstLength, 0.5f, 50f);
+            e.brightness = Slider("Burst layer: brightness (Hz)", e.brightness, 100f, 12000f);
         }
     }
 

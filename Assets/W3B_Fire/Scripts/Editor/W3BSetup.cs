@@ -71,7 +71,7 @@ public static class W3BSetup
         // 10. The students' building blocks, ready to sculpt.
         var sculpt = StepObject(stepsRoot, "10_Your_Turn");
         var nl = Child(sculpt, "NoiseLayer"); Demo(nl).AddComponent<NoiseLayer>().cutoff = 150f;
-        var el = Child(sculpt, "EventLayer"); var ev = Demo(el).AddComponent<EventLayer>(); ev.eventsPerSecond = 1f;
+        var el = Child(sculpt, "BurstLayer"); var ev = Demo(el).AddComponent<BurstLayer>(); ev.burstsPerSecond = 1f;
 
         // 11. The reveal: Farnell's three elements of fire, one at a time.
         var reveal = StepObject(stepsRoot, "11_Reveal_Fire");
@@ -79,17 +79,17 @@ public static class W3BSetup
 
         sequencer.steps = new[]
         {
-            NewStep("Frozen: a rain recording on loop", "The ice cube. Listen for the seam: it repeats exactly.", frozen),
-            NewStep("Thawed: recordings under rules", "The same kind of recordings: a bed loop and 12 single drops. Random choice, pitch, volume and timing. One slider: intensity. (Route 1)", thawed),
-            NewStep("One sine wave", "Fourier: any sound can be built from sine waves. This is the building block.", sine),
+            NewStep("One sine wave", "Fourier: any sound can be built from sine waves. This is the building block of everything that follows.", sine),
             NewStep("Digital audio is numbers", "About 48,000 numbers a second. Fewer steps per number (bit depth) or fewer numbers (holding each one) and the smooth wave becomes a staircase. Listen to it get buzzy.", digital, true),
             NewStep("Noise, and shaping it", "Noise is every frequency at once. A filter keeps some: low-pass = rumble, high-pass = air.", noise),
+            NewStep("Frozen: a rain recording on loop", "A recording is frozen in time. Listen for the seam: it repeats exactly.", frozen),
+            NewStep("Thawed: recordings under rules", "The same kind of recordings: a bed loop and 8 single drops. Random choice, pitch, volume and timing. One slider: intensity. (Part A: recorded)", thawed),
             NewStep("Rain, layer 1: droplets", "Slow random noise, raised to the 8th power, lets only its rare peaks through. Each peak gates a short sine: a plink.", drops1),
-            NewStep("Rain, layer 2: drips", "Spiky noise through a very sharp filter whose centre jumps around: bright, ringing drips.", drops2),
+            NewStep("Rain, layer 2: drips", "A pressure pulse, and sometimes a bubble ringing as it rises: Farnell's physics of a drop.", drops2),
             NewStep("Rain, layers 3 and 4: rumble and ambience", "Noise around 333 Hz for drops on big surfaces, and a little white noise for the distant wash. The full patch.", full),
-            NewStep("One slider: drizzle to storm", "Intensity changes WHAT the sound is, not just how loud: more events, more rumble. A recording cannot do this. (Route 2)", storm, true),
-            NewStep("Your turn: sculpt by ear", "Two building blocks you will use: a noise layer and an event layer. Move the sliders and listen. What could each one become?", sculpt),
-            NewStep("The reveal: three elements of fire", "Farnell: hissing (gas escaping), crackling (sap bursting), lapping (the flames' roar). Solo each one, then all three, then intensity. (Use at the listening share.)", reveal),
+            NewStep("One slider: drizzle to storm", "Intensity changes WHAT the sound is, not just how loud: more drops, more rumble. A recording cannot do this. (Part B: procedural)", storm, true),
+            NewStep("Your building blocks", "Part B gives you two: a Noise Layer (a constant sound) and a Burst Layer (short random events). Move the sliders and listen.", sculpt),
+            NewStep("The reveal: three elements of fire", "Farnell: hissing (gas escaping), crackling (sap bursting), lapping (the flames' roar). Solo each one, then all three, then intensity.", reveal),
         };
         for (int i = 1; i < sequencer.steps.Length; i++) sequencer.steps[i].root.SetActive(false);
         Save(scene);
@@ -142,18 +142,18 @@ public static class W3BSetup
         BuildRoom();
         MakeListener(new Vector3(0, 1.6f, -2.2f), true);
 
-        // Route 1 result: recordings, varied (what MyRandomPlayer + the pitch line gives).
-        var rec = BuildCampfire("Campfire_Recorded_Route1", Vector3.zero, FireMode.Shell);
+        // Part A result: recordings, varied (what MyRandomPlayer + the pitch line gives).
+        var rec = BuildCampfire("Campfire_Recorded_PartA", Vector3.zero, FireMode.Shell);
         var r1 = rec.transform.Find("Layer 1").gameObject; r1.GetComponent<AudioSource>().clip = FindClip("fire_hiss_loop"); r1.AddComponent<SampleLoopLayer>();
         var r2 = rec.transform.Find("Layer 2").gameObject; r2.AddComponent<SampleOneShotLayer>().clips = FindClips("fire_crackle_");
         var r3 = rec.transform.Find("Layer 3").gameObject; r3.GetComponent<AudioSource>().clip = FindClip("fire_lapping_loop"); r3.AddComponent<SampleLoopLayer>();
 
-        // Route 2 result: sculpted from the two building blocks, plus the link.
-        var pro = BuildCampfire("Campfire_Procedural_Route2", Vector3.zero, FireMode.Shell);
+        // Part B result: sculpted from the two building blocks, plus the link.
+        var pro = BuildCampfire("Campfire_Procedural_PartB", Vector3.zero, FireMode.Shell);
         var hiss = pro.transform.Find("Layer 1").gameObject.AddComponent<NoiseLayer>();
         hiss.filter = NoiseLayer.FilterType.HighPass; hiss.cutoff = 4000f; hiss.wobbleDepth = 0.5f; hiss.wobbleSpeed = 3f; hiss.level = 0.2f;
-        var crackle = pro.transform.Find("Layer 2").gameObject.AddComponent<EventLayer>();
-        crackle.eventsPerSecond = 8f; crackle.eventLength = 3f; crackle.brightness = 2500f; crackle.variation = 0.7f; crackle.level = 0.6f;
+        var crackle = pro.transform.Find("Layer 2").gameObject.AddComponent<BurstLayer>();
+        crackle.burstsPerSecond = 8f; crackle.burstLength = 3f; crackle.brightness = 2500f; crackle.variation = 0.7f; crackle.level = 0.6f;
         var roar = pro.transform.Find("Layer 3").gameObject.AddComponent<NoiseLayer>();
         roar.filter = NoiseLayer.FilterType.LowPass; roar.cutoff = 300f; roar.wobbleDepth = 0.6f; roar.wobbleSpeed = 0.8f; roar.level = 0.7f;
         var link = pro.AddComponent<ExampleDynamicLink>();
@@ -162,7 +162,7 @@ public static class W3BSetup
 
         ExportSteamGeometry();
         Save(scene);
-        Debug.Log("W3B: student example built. Campfire_Recorded_Route1 is on; switch to Campfire_Procedural_Route2 to compare.");
+        Debug.Log("W3B: student example built. Campfire_Recorded_PartA is on; switch to Campfire_Procedural_PartB to compare.");
     }
 
     [MenuItem("W3B/10. Build Finale Scene (everyone back together)")]
@@ -172,28 +172,34 @@ public static class W3BSetup
         BuildRoom();
         MakeListener(new Vector3(0, 1.6f, -2.2f), true);
 
-        var rec = BuildCampfire("Campfire_Recorded", Vector3.zero, FireMode.Recorded);
-        var gen = BuildCampfire("Campfire_Generated", Vector3.zero, FireMode.Shell);
+        var stat = BuildCampfire("Campfire_Recorded_Static", Vector3.zero, FireMode.Shell);
+        var sl = stat.transform.Find("Layer 1"); sl.name = "Loop";
+        var ssrc = sl.GetComponent<AudioSource>(); ssrc.clip = FindClip("fire_full_loop"); ssrc.loop = true; ssrc.playOnAwake = true; ssrc.volume = 0.8f;
+        UnityEngine.Object.DestroyImmediate(stat.transform.Find("Layer 2").gameObject);
+        UnityEngine.Object.DestroyImmediate(stat.transform.Find("Layer 3").gameObject);
+
+        var rec = BuildCampfire("Campfire_Recorded_Dynamic", Vector3.zero, FireMode.Recorded);
+        var gen = BuildCampfire("Campfire_Procedural", Vector3.zero, FireMode.Shell);
         var recipe = gen.transform.Find("Layer 1").gameObject.AddComponent<FireRecipe>();
         recipe.gain = 0.6f;
         UnityEngine.Object.DestroyImmediate(gen.transform.Find("Layer 2").gameObject);
         UnityEngine.Object.DestroyImmediate(gen.transform.Find("Layer 3").gameObject);
         gen.transform.Find("Layer 1").name = "FireRecipe";
 
-        rec.AddComponent<AddLogOnKey>().fire = rec.GetComponent<FireController>();
-        gen.AddComponent<AddLogOnKey>().fire = gen.GetComponent<FireController>();
+        foreach (var c in new[] { stat, rec, gen }) c.AddComponent<AddLogOnKey>().fire = c.GetComponent<FireController>();
 
         var panel = new GameObject("Finale");
         var fc = panel.AddComponent<FinaleController>();
+        fc.staticFire = stat.GetComponent<FireController>();
         fc.recordedFire = rec.GetComponent<FireController>();
-        fc.generatedFire = gen.GetComponent<FireController>();
+        fc.proceduralFire = gen.GetComponent<FireController>();
         fc.recipe = recipe;
         panel.AddComponent<FinaleAutopilot>();
 
         Selection.activeGameObject = panel;
         ExportSteamGeometry();
         Save(scene);
-        Debug.Log("W3B: finale built. Press Play. R / G switch recorded and generated, L adds a log, B burns down.");
+        Debug.Log("W3B: finale built. Press Play. 1 / 2 / 3 switch static, dynamic and procedural; L adds a log, B burns down.");
     }
 
     // ---------- Fire ----------
