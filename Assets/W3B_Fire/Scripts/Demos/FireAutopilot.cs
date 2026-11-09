@@ -48,9 +48,13 @@ public class FireAutopilot : MonoBehaviour
 
         if (cameraToOrbit != null)
         {
-            float a = t * 0.25f;
-            cameraToOrbit.position = new Vector3(Mathf.Sin(a) * 2.2f, 1.6f, -Mathf.Cos(a) * 2.2f);
-            cameraToOrbit.LookAt(new Vector3(0f, 0.4f, 0f));
+            // Face the playing fire squarely, so it sits in the centre of the picture and
+            // the sound is balanced left to right. A slow, small, symmetric sway (left, centre,
+            // right, centre) lets Steam Audio move the sound gently without pulling it to one side.
+            Vector3 f = fire.transform.position;
+            float sway = Mathf.Sin(p * Mathf.PI * 2f) * 0.6f;
+            cameraToOrbit.position = new Vector3(f.x + sway, 1.5f, f.z - 2.6f);
+            cameraToOrbit.LookAt(new Vector3(f.x, 0.4f, f.z));
         }
     }
 }

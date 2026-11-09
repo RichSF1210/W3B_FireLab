@@ -27,7 +27,7 @@ Real recordings by Rich Hemming: `Fire_Recorded` (hiss and lapping loops, crackl
 | Scene | Purpose |
 |---|---|
 | `W3B_Demo` | The lecturer's demo: 11 steps, arrow keys, on-screen sliders and oscilloscope |
-| `W3B_Student_Shell` | **Students start here.** A room and two silent campfires: **Campfire A (Recorded)** for Part A, **Campfire B (Procedural)** for Part B. Three empty spatialised layers each: one part of the sound per layer |
+| `W3B_Student_Shell` | **Students start here.** A room and two silent campfires: **Campfire A (Recorded)** for Part A (amber sign) and **Campfire B (Procedural)** for Part B (blue sign). Three empty spatialised layers each: one part of the sound per layer |
 | `W3B_Complete_Reference` | Both campfires finished, to compare with yours afterwards. A: hiss loop, random crackles, lapping loop. B: hiss and roar NoiseLayers, a crackle BurstLayer, linked to Intensity |
 | `W3B_Finale` | Everyone back together: one fire, three soundtracks (recorded static, recorded dynamic, procedural). Burn down (B), add a log (L), change the wood and the size |
 

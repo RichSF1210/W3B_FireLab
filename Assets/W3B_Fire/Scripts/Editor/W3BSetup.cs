@@ -98,6 +98,34 @@ public static class W3BSetup
 
     public const string FireA = "Campfire A (Recorded)";
     public const string FireB = "Campfire B (Procedural)";
+    // Signs floating above each campfire, so the two fires cannot be confused in the Game view.
+    static readonly Color SignA = new Color(1f, 0.72f, 0.25f), SignB = new Color(0.45f, 0.85f, 1f);
+    public static void AddSign(GameObject fire, string text, Color colour)
+    {
+        var old = fire.transform.Find("Sign"); if (old != null) UnityEngine.Object.DestroyImmediate(old.gameObject);
+        var sign = new GameObject("Sign");
+        sign.transform.SetParent(fire.transform, false);
+        sign.transform.localPosition = new Vector3(0f, 1.55f, 0f);
+        var tm = sign.AddComponent<TextMesh>();
+        tm.text = text; tm.fontSize = 96; tm.characterSize = 0.022f;
+        tm.anchor = TextAnchor.MiddleCenter; tm.alignment = TextAlignment.Center;
+        tm.fontStyle = FontStyle.Bold; tm.color = colour;
+        tm.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        sign.GetComponent<MeshRenderer>().sharedMaterial = tm.font.material;
+    }
+
+    [MenuItem("W3B/12. Label the campfires in the open scene")]
+    static void LabelOpenScene()
+    {
+        foreach (var f in UnityEngine.Object.FindObjectsByType<FireController>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+        {
+            if (f.name == FireA) AddSign(f.gameObject, "A: RECORDED", SignA);
+            if (f.name == FireB) AddSign(f.gameObject, "B: PROCEDURAL", SignB);
+        }
+        UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(UnityEngine.SceneManagement.SceneManager.GetActiveScene());
+        UnityEditor.SceneManagement.EditorSceneManager.SaveOpenScenes();
+    }
+
     static readonly Vector3 PosA = new Vector3(-1.4f, 0f, 0.3f), PosB = new Vector3(1.4f, 0f, 0.3f);
 
     [MenuItem("W3B/3. Build Student Shell Scene (two empty campfires: A and B)")]
@@ -106,8 +134,8 @@ public static class W3BSetup
         var scene = NewScene("W3B_Student_Shell");
         BuildRoom();
         MakeListener(new Vector3(0, 1.6f, -2.6f), true);
-        BuildCampfire(FireA, PosA, FireMode.Shell);
-        BuildCampfire(FireB, PosB, FireMode.Shell);
+        AddSign(BuildCampfire(FireA, PosA, FireMode.Shell), "A: RECORDED", SignA);
+        AddSign(BuildCampfire(FireB, PosB, FireMode.Shell), "B: PROCEDURAL", SignB);
         ExportSteamGeometry();
         Save(scene);
         Debug.Log("W3B: shell built. Campfire A (Part A, recorded) and Campfire B (Part B, procedural), each with three empty spatialised layers.");
@@ -138,6 +166,8 @@ public static class W3BSetup
         link.fire = pro.GetComponent<FireController>(); link.crackleLayer = crackle; link.hissLayer = hiss; link.roarLayer = roar;
 
         foreach (var c in new[] { rec, pro }) c.AddComponent<AddLogOnKey>().fire = c.GetComponent<FireController>();
+        AddSign(rec, "A: RECORDED", SignA);
+        AddSign(pro, "B: PROCEDURAL", SignB);
         Selection.activeGameObject = rec;
         ExportSteamGeometry();
         Save(scene);
