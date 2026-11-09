@@ -11,11 +11,11 @@ using UnityEngine;   // gives us Unity's tools: Mathf, MonoBehaviour and so on
 //   Game audio engines such as Wwise and FMOD are built around this idea.
 //
 // HOW TO USE IT
-//   1 Select Campfire. Add Component > MyDynamicLink.
-//   2 Drag Campfire into "Fire". Drag the layer with your BurstLayer into
+//   1 Select Campfire B. Add Component > MyDynamicLink.
+//   2 Drag Campfire B into "Fire". Drag the layer with your BurstLayer into
 //     "Burst Layer", and the one with your NoiseLayer into "Noise Layer".
 //   3 Find the TODO below. Delete the two slashes // in front of ONE line.
-//     Save. Press Play, select Campfire and drag Intensity from 0 to 1.
+//     Save. Press Play, select Campfire B and drag Intensity from 0 to 1.
 //
 // THE KEY IDEA: Mathf.Lerp(a, b, i)
 //   "Lerp" is short for linear interpolation: go from a to b as i goes 0 to 1.
@@ -25,7 +25,7 @@ using UnityEngine;   // gives us Unity's tools: Mathf, MonoBehaviour and so on
 // =====================================================================
 public class MyDynamicLink : MonoBehaviour      // MonoBehaviour = a script that lives on an object
 {
-    public FireController fire;      // drag the Campfire here: it holds the Intensity value
+    public FireController fire;      // drag Campfire B here: it holds the Intensity value
     public BurstLayer burstLayer;    // drag the layer that has your BurstLayer here
     public NoiseLayer noiseLayer;    // drag the layer that has your NoiseLayer here
 

@@ -14,7 +14,7 @@ public class DemoAutopilot : MonoBehaviour
     int step = -1;
 
     // Seconds on each of the 10 steps.
-    readonly float[] durations = { 8f, 16f, 12f, 8f, 12f, 8f, 8f, 8f, 16f, 14f, 30f };
+    readonly float[] durations = { 8f, 16f, 12f, 8f, 12f, 8f, 8f, 8f, 16f, 20f, 30f };
 
     void Start()
     {
@@ -68,11 +68,11 @@ public class DemoAutopilot : MonoBehaviour
                 f.solo = p < 0.15f ? FireRecipe.Solo.Hissing : p < 0.3f ? FireRecipe.Solo.Crackling : p < 0.45f ? FireRecipe.Solo.Lapping : FireRecipe.Solo.All;
                 f.intensity = p < 0.55f ? 0.5f : Mathf.Sin((p - 0.55f) / 0.45f * Mathf.PI) * 0.9f + 0.05f;
                 break;
-            case 9:
+            case 9: // the building blocks: Burst Layer alone, then Noise Layer alone, then both
                 var e = root.GetComponentInChildren<BurstLayer>();
                 var nl = root.GetComponentInChildren<NoiseLayer>();
-                if (nl != null) nl.cutoff = Mathf.Lerp(150f, 3000f, Mathf.Clamp01(p * 2f));
-                if (e != null) { e.burstsPerSecond = Mathf.Lerp(1f, 40f, Mathf.Clamp01(p * 2f - 1f)); }
+                if (e != null) { e.level = p < 0.45f || p > 0.75f ? 0.8f : 0f; e.burstsPerSecond = Mathf.Lerp(4f, 20f, Mathf.Clamp01(p / 0.45f)); }
+                if (nl != null) { nl.level = p < 0.45f ? 0f : 0.6f; nl.cutoff = Mathf.Lerp(200f, 1500f, Mathf.Clamp01((p - 0.45f) / 0.3f)); }
                 break;
         }
     }

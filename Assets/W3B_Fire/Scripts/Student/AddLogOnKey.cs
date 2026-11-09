@@ -13,7 +13,7 @@ using UnityEngine;   // gives us Unity's tools: Input, KeyCode, MonoBehaviour
 // =====================================================================
 public class AddLogOnKey : MonoBehaviour
 {
-    public FireController fire;   // drag the Campfire here
+    public FireController fire;   // drag the campfire here (A or B)
 
     // Update() runs once every frame: about 60 times a second.
     void Update()

@@ -52,15 +52,15 @@ public class BurstLayer : ProceduralSound          // ProceduralSound does the a
 
         // Is it time for a new burst? Roll a dice every sample:
         // a chance of burstsPerSecond / sampleRate gives that many per second, at random moments.
-        if (Random01() < burstsPerSecond / sampleRate)
+        if (Random01() < burstsPerSecond / sampleRate)                   // 4 RANDOM: when
         {
-            env = 1f - variation * Random01();                         // a random loudness
+            env = 1f - variation * Random01();                         // 2 ENVELOPE: instant attack, at a random loudness
             float ms = burstLength * (1f - 0.8f * variation * Random01());   // a random length
             decay = Mathf.Exp(-1f / (ms * 0.001f * sampleRate));       // turn that length into a decay rate
         }
 
-        float y = hip.Tick(Noise()) * env;   // white noise, through the filter, at the burst's loudness
-        env *= decay;                        // the burst dies away a little every sample
+        float y = hip.Tick(Noise()) * env;   // 1 SOURCE (noise), 3 FILTER (brightness), shaped by 2 ENVELOPE
+        env *= decay;                        // 2 ENVELOPE: the burst dies away a little every sample (exponential decay)
         return y * level * 2f;               // set the volume
     }
 }

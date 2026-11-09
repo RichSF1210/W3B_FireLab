@@ -70,8 +70,8 @@ public static class W3BSetup
 
         // 10. The students' building blocks, ready to sculpt.
         var sculpt = StepObject(stepsRoot, "10_Your_Turn");
-        var nl = Child(sculpt, "NoiseLayer"); Demo(nl).AddComponent<NoiseLayer>().cutoff = 150f;
-        var el = Child(sculpt, "BurstLayer"); var ev = Demo(el).AddComponent<BurstLayer>(); ev.burstsPerSecond = 1f;
+        var nl = Child(sculpt, "NoiseLayer"); var nlc = Demo(nl).AddComponent<NoiseLayer>(); nlc.cutoff = 300f; nlc.level = 0f;
+        var el = Child(sculpt, "BurstLayer"); var ev = Demo(el).AddComponent<BurstLayer>(); ev.burstsPerSecond = 10f; ev.burstLength = 3f; ev.brightness = 2500f; ev.level = 0.8f;
 
         // 11. The reveal: Farnell's three elements of fire, one at a time.
         var reveal = StepObject(stepsRoot, "11_Reveal_Fire");
@@ -96,31 +96,52 @@ public static class W3BSetup
         Debug.Log("W3B: demo built. Press Play: right/left arrows step through, sliders are on screen.");
     }
 
-    [MenuItem("W3B/3. Build Student Shell Scene (room + fire, no dynamic audio yet)")]
+    public const string FireA = "Campfire A (Recorded)";
+    public const string FireB = "Campfire B (Procedural)";
+    static readonly Vector3 PosA = new Vector3(-1.4f, 0f, 0.3f), PosB = new Vector3(1.4f, 0f, 0.3f);
+
+    [MenuItem("W3B/3. Build Student Shell Scene (two empty campfires: A and B)")]
     public static void BuildStudentShell()
     {
         var scene = NewScene("W3B_Student_Shell");
         BuildRoom();
-        MakeListener(new Vector3(0, 1.6f, -2.2f), true);
-        BuildCampfire("Campfire", Vector3.zero, FireMode.Shell);
+        MakeListener(new Vector3(0, 1.6f, -2.6f), true);
+        BuildCampfire(FireA, PosA, FireMode.Shell);
+        BuildCampfire(FireB, PosB, FireMode.Shell);
         ExportSteamGeometry();
         Save(scene);
-        Debug.Log("W3B: shell built. Hiss, Crackle and Lapping have spatialised Audio Sources ready; students add the layer scripts.");
+        Debug.Log("W3B: shell built. Campfire A (Part A, recorded) and Campfire B (Part B, procedural), each with three empty spatialised layers.");
     }
 
-    [MenuItem("W3B/4. Build Solution Scene (both finished fires)")]
+    [MenuItem("W3B/4. Build Complete Reference Scene (A and B finished)")]
     public static void BuildSolution()
     {
-        var scene = NewScene("W3B_Solution");
+        var scene = NewScene("W3B_Complete_Reference");
         BuildRoom();
-        MakeListener(new Vector3(0, 1.6f, -2.2f), true);
-        var rec = BuildCampfire("Campfire_Recorded", Vector3.zero, FireMode.Recorded);
-        var pro = BuildCampfire("Campfire_Procedural", Vector3.zero, FireMode.Procedural);
-        pro.SetActive(false);
+        MakeListener(new Vector3(0, 1.6f, -2.6f), true);
+
+        // Campfire A: Part A finished. Two loops and random one-shots, all following Intensity.
+        var rec = BuildCampfire(FireA, PosA, FireMode.Shell);
+        var r1 = rec.transform.Find("Layer 1").gameObject; r1.GetComponent<AudioSource>().clip = FindClip("fire_hiss_loop"); r1.AddComponent<SampleLoopLayer>();
+        var r2 = rec.transform.Find("Layer 2").gameObject; r2.AddComponent<SampleOneShotLayer>().clips = FindClips("fire_crackle_");
+        var r3 = rec.transform.Find("Layer 3").gameObject; r3.GetComponent<AudioSource>().clip = FindClip("fire_lapping_loop"); r3.AddComponent<SampleLoopLayer>();
+
+        // Campfire B: Part B finished. Two noise layers, a burst layer, and the dynamic link.
+        var pro = BuildCampfire(FireB, PosB, FireMode.Shell);
+        var hiss = pro.transform.Find("Layer 1").gameObject.AddComponent<NoiseLayer>();
+        hiss.filter = NoiseLayer.FilterType.HighPass; hiss.cutoff = 4000f; hiss.wobbleDepth = 0.5f; hiss.wobbleSpeed = 3f; hiss.level = 0.2f;
+        var crackle = pro.transform.Find("Layer 2").gameObject.AddComponent<BurstLayer>();
+        crackle.burstsPerSecond = 8f; crackle.burstLength = 3f; crackle.brightness = 2500f; crackle.variation = 0.7f; crackle.level = 0.6f;
+        var roar = pro.transform.Find("Layer 3").gameObject.AddComponent<NoiseLayer>();
+        roar.filter = NoiseLayer.FilterType.LowPass; roar.cutoff = 300f; roar.wobbleDepth = 0.6f; roar.wobbleSpeed = 0.8f; roar.level = 0.7f;
+        var link = pro.AddComponent<ExampleDynamicLink>();
+        link.fire = pro.GetComponent<FireController>(); link.crackleLayer = crackle; link.hissLayer = hiss; link.roarLayer = roar;
+
+        foreach (var c in new[] { rec, pro }) c.AddComponent<AddLogOnKey>().fire = c.GetComponent<FireController>();
         Selection.activeGameObject = rec;
         ExportSteamGeometry();
         Save(scene);
-        Debug.Log("W3B: two finished fires in the same place. Switch between them to A/B recorded and procedural.");
+        Debug.Log("W3B: complete reference built. Walk between A and B; press L for a log on both.");
     }
 
     [MenuItem("W3B/5. Add Shell Fire To Current Scene (e.g. a W2 Lab B room)")]
@@ -133,36 +154,6 @@ public static class W3BSetup
         Selection.activeGameObject = BuildCampfire("Campfire", pos, FireMode.Shell);
         EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
         Debug.Log("W3B: fire added. If you moved or added room geometry, run Steam Audio > Export Active Scene again.");
-    }
-
-    [MenuItem("W3B/8. Build Student Example Scene (what a finished student fire sounds like)")]
-    public static void BuildStudentExample()
-    {
-        var scene = NewScene("W3B_Student_Example");
-        BuildRoom();
-        MakeListener(new Vector3(0, 1.6f, -2.2f), true);
-
-        // Part A result: recordings, varied (what MyRandomPlayer + the pitch line gives).
-        var rec = BuildCampfire("Campfire_Recorded_PartA", Vector3.zero, FireMode.Shell);
-        var r1 = rec.transform.Find("Layer 1").gameObject; r1.GetComponent<AudioSource>().clip = FindClip("fire_hiss_loop"); r1.AddComponent<SampleLoopLayer>();
-        var r2 = rec.transform.Find("Layer 2").gameObject; r2.AddComponent<SampleOneShotLayer>().clips = FindClips("fire_crackle_");
-        var r3 = rec.transform.Find("Layer 3").gameObject; r3.GetComponent<AudioSource>().clip = FindClip("fire_lapping_loop"); r3.AddComponent<SampleLoopLayer>();
-
-        // Part B result: sculpted from the two building blocks, plus the link.
-        var pro = BuildCampfire("Campfire_Procedural_PartB", Vector3.zero, FireMode.Shell);
-        var hiss = pro.transform.Find("Layer 1").gameObject.AddComponent<NoiseLayer>();
-        hiss.filter = NoiseLayer.FilterType.HighPass; hiss.cutoff = 4000f; hiss.wobbleDepth = 0.5f; hiss.wobbleSpeed = 3f; hiss.level = 0.2f;
-        var crackle = pro.transform.Find("Layer 2").gameObject.AddComponent<BurstLayer>();
-        crackle.burstsPerSecond = 8f; crackle.burstLength = 3f; crackle.brightness = 2500f; crackle.variation = 0.7f; crackle.level = 0.6f;
-        var roar = pro.transform.Find("Layer 3").gameObject.AddComponent<NoiseLayer>();
-        roar.filter = NoiseLayer.FilterType.LowPass; roar.cutoff = 300f; roar.wobbleDepth = 0.6f; roar.wobbleSpeed = 0.8f; roar.level = 0.7f;
-        var link = pro.AddComponent<ExampleDynamicLink>();
-        link.fire = pro.GetComponent<FireController>(); link.crackleLayer = crackle; link.hissLayer = hiss; link.roarLayer = roar;
-        pro.SetActive(false);
-
-        ExportSteamGeometry();
-        Save(scene);
-        Debug.Log("W3B: student example built. Campfire_Recorded_PartA is on; switch to Campfire_Procedural_PartB to compare.");
     }
 
     [MenuItem("W3B/10. Build Finale Scene (everyone back together)")]

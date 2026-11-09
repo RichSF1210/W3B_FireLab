@@ -13,8 +13,11 @@ public static class W3BWalkthrough
 {
     const string Shell = "Assets/W3B_Fire/Scenes/W3B_Student_Shell.unity";
 
-    static GameObject Fire() => GameObject.Find("Campfire");
-    static GameObject Layer(int n) => Fire().transform.Find("Layer " + n).gameObject;
+    static GameObject FireA() => GameObject.Find(W3BSetup.FireA);
+    static GameObject FireB() => GameObject.Find(W3BSetup.FireB);
+    static GameObject Fire() => FireA();
+    static GameObject LayerA(int n) => FireA().transform.Find("Layer " + n).gameObject;
+    static GameObject LayerB(int n) => FireB().transform.Find("Layer " + n).gameObject;
     // Select the object; fold the set-up components so the student's new component is in view.
     static void Show(GameObject go)
     {
@@ -37,12 +40,12 @@ public static class W3BWalkthrough
     static void S1() { EditorSceneManager.OpenScene(Shell); Show(Fire()); }
 
     [MenuItem("W3B/Walkthrough/2 An empty layer")]
-    static void S2() { Show(Layer(2)); }
+    static void S2() { Show(LayerA(2)); }
 
     [MenuItem("W3B/Walkthrough/3 Part A: MyRandomPlayer with clips")]
     static void S3()
     {
-        var l = Layer(2);
+        var l = LayerA(2);
         var p = l.GetComponent<MyRandomPlayer>(); if (p == null) p = l.AddComponent<MyRandomPlayer>();
         p.clips = Clips("fire_crackle_");
         Show(l);
@@ -51,7 +54,7 @@ public static class W3BWalkthrough
     [MenuItem("W3B/Walkthrough/4 Part A: SampleLoopLayer with a loop")]
     static void S4()
     {
-        var l = Layer(1);
+        var l = LayerA(1);
         l.GetComponent<AudioSource>().clip = Clips("fire_hiss_loop").FirstOrDefault();
         if (l.GetComponent<SampleLoopLayer>() == null) l.AddComponent<SampleLoopLayer>();
         Show(l);
@@ -60,28 +63,27 @@ public static class W3BWalkthrough
     [MenuItem("W3B/Walkthrough/5 Part B: NoiseLayer")]
     static void S5()
     {
-        EditorSceneManager.OpenScene(Shell);
-        var n = Layer(3).AddComponent<NoiseLayer>();
+        var n = LayerB(3).GetComponent<NoiseLayer>(); if (n == null) n = LayerB(3).AddComponent<NoiseLayer>();
         n.filter = NoiseLayer.FilterType.LowPass; n.cutoff = 300f; n.wobbleDepth = 0.6f; n.wobbleSpeed = 0.8f; n.level = 0.7f;
-        Show(Layer(3));
+        Show(LayerB(3));
     }
 
     [MenuItem("W3B/Walkthrough/6 Part B: BurstLayer")]
     static void S6()
     {
-        var e = Layer(2).GetComponent<BurstLayer>(); if (e == null) e = Layer(2).AddComponent<BurstLayer>();
+        var e = LayerB(2).GetComponent<BurstLayer>(); if (e == null) e = LayerB(2).AddComponent<BurstLayer>();
         e.burstsPerSecond = 8f; e.burstLength = 3f; e.brightness = 2500f; e.variation = 0.7f;
-        Show(Layer(2));
+        Show(LayerB(2));
     }
 
-    [MenuItem("W3B/Walkthrough/7 Part B: MyDynamicLink on the Campfire")]
+    [MenuItem("W3B/Walkthrough/7 Part B: MyDynamicLink on Campfire B")]
     static void S7()
     {
-        var f = Fire();
+        var f = FireB();
         var link = f.GetComponent<MyDynamicLink>(); if (link == null) link = f.AddComponent<MyDynamicLink>();
         link.fire = f.GetComponent<FireController>();
-        link.burstLayer = Layer(2).GetComponent<BurstLayer>();
-        link.noiseLayer = Layer(3).GetComponent<NoiseLayer>();
+        link.burstLayer = LayerB(2).GetComponent<BurstLayer>();
+        link.noiseLayer = LayerB(3).GetComponent<NoiseLayer>();
         Show(f);
     }
 }

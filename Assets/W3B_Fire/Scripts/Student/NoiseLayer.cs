@@ -9,6 +9,19 @@ using UnityEngine;
 //   it is calculated from numbers as it plays, so it never repeats.
 //   Use it for any CONSTANT part of a sound: a roar, a hiss, a rumble.
 //
+// WHERE THE SHAPE OF THIS SOUND COMES FROM (the art is in these four steps)
+//   1 SOURCE   : white noise. Every frequency at once, no pitch, no character.
+//                Raw material, like a block of clay.
+//   2 FILTER   : carves the spectrum, so it decides what the sound seems MADE OF.
+//                Keep only lows (Low Pass, 200 Hz): something big and heavy, a roar.
+//                Keep only highs (High Pass, 4,000 Hz): air, gas, steam, a hiss.
+//                Keep a band (Band Pass + Resonance): a hollow, whistling tone.
+//   3 ENVELOPE : shapes it in TIME. Here a slow random wobble in level, so it
+//                breathes and gusts like something alive instead of a flat drone.
+//   4 RANDOM   : the wobble's targets are random, so it never repeats.
+//   Then PARAMETERS (the sliders) are the handles the game can move: that is
+//   what makes procedural sound dynamic (see MyDynamicLink.cs).
+//
 // THE SLIDERS (in the Inspector)
 //   Filter       : Low Pass keeps the lows, High Pass keeps the highs,
 //                  Band Pass keeps a band in between
@@ -54,14 +67,14 @@ public class NoiseLayer : ProceduralSound          // ProceduralSound does the a
         if ((counter++ & 63) == 0)                                     // every 64 samples, follow the sliders
         { lop.Set(cutoff, sampleRate); hip.Set(cutoff, sampleRate); bp.Set(cutoff, resonance, sampleRate); }
 
-        float n = Noise();                                             // one random number from -1 to 1: white noise
-        float y = filter == FilterType.LowPass ? lop.Tick(n) * 3f      // keep the lows (boosted, as lows are quieter)
+        float n = Noise();                                             // 1 SOURCE: one random number from -1 to 1 (white noise)
+        float y = filter == FilterType.LowPass ? lop.Tick(n) * 3f      // 2 FILTER: keep the lows (boosted, as lows are quieter)
                 : filter == FilterType.HighPass ? hip.Tick(n)          // keep the highs
                 : bp.Tick(n) * 2f;                                     // keep a band
 
-        if (Random01() < wobbleSpeed / sampleRate) target = Random01();   // now and then, pick a new random target
+        if (Random01() < wobbleSpeed / sampleRate) target = Random01();   // 4 RANDOM: now and then, pick a new random target
         wobble += (target - wobble) * (wobbleSpeed * 4f / sampleRate);    // glide smoothly towards it
-        float amp = 1f - wobbleDepth + wobbleDepth * wobble;              // turn the wobble into a volume
+        float amp = 1f - wobbleDepth + wobbleDepth * wobble;              // 3 ENVELOPE: turn the wobble into a volume
         return y * level * amp;                                           // filtered noise, at that volume
     }
 }

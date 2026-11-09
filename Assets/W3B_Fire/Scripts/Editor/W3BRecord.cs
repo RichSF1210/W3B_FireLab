@@ -23,11 +23,9 @@ public static class W3BRecord
     [MenuItem("W3B/6. Record Demo Walkthrough (video + sound)")]
     static void RecordDemo() => Begin("Assets/W3B_Fire/Scenes/W3B_Demo.unity", "W3B_Demo_Walkthrough");
 
-    [MenuItem("W3B/7. Record Fire Comparison (video + sound)")]
-    static void RecordFires() => Begin("Assets/W3B_Fire/Scenes/W3B_Solution.unity", "W3B_Fire_Recorded_vs_Procedural");
-
-    [MenuItem("W3B/9. Record Student Example (video + sound)")]
-    static void RecordStudentExample() => Begin("Assets/W3B_Fire/Scenes/W3B_Student_Example.unity", "W3B_Student_Example_PartA_vs_PartB");
+    
+    [MenuItem("W3B/9. Record Complete Reference (video + sound)")]
+    static void RecordStudentExample() => Begin("Assets/W3B_Fire/Scenes/W3B_Complete_Reference.unity", "W3B_Complete_Reference_A_then_B");
 
     [MenuItem("W3B/11. Record Finale (video + sound)")]
     static void RecordFinale() => Begin("Assets/W3B_Fire/Scenes/W3B_Finale.unity", "W3B_Finale");
