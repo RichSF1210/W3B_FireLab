@@ -165,6 +165,37 @@ public static class W3BSetup
         Debug.Log("W3B: student example built. Campfire_Recorded_Route1 is on; switch to Campfire_Procedural_Route2 to compare.");
     }
 
+    [MenuItem("W3B/10. Build Finale Scene (everyone back together)")]
+    public static void BuildFinale()
+    {
+        var scene = NewScene("W3B_Finale");
+        BuildRoom();
+        MakeListener(new Vector3(0, 1.6f, -2.2f), true);
+
+        var rec = BuildCampfire("Campfire_Recorded", Vector3.zero, FireMode.Recorded);
+        var gen = BuildCampfire("Campfire_Generated", Vector3.zero, FireMode.Shell);
+        var recipe = gen.transform.Find("Layer 1").gameObject.AddComponent<FireRecipe>();
+        recipe.gain = 0.6f;
+        UnityEngine.Object.DestroyImmediate(gen.transform.Find("Layer 2").gameObject);
+        UnityEngine.Object.DestroyImmediate(gen.transform.Find("Layer 3").gameObject);
+        gen.transform.Find("Layer 1").name = "FireRecipe";
+
+        rec.AddComponent<AddLogOnKey>().fire = rec.GetComponent<FireController>();
+        gen.AddComponent<AddLogOnKey>().fire = gen.GetComponent<FireController>();
+
+        var panel = new GameObject("Finale");
+        var fc = panel.AddComponent<FinaleController>();
+        fc.recordedFire = rec.GetComponent<FireController>();
+        fc.generatedFire = gen.GetComponent<FireController>();
+        fc.recipe = recipe;
+        panel.AddComponent<FinaleAutopilot>();
+
+        Selection.activeGameObject = panel;
+        ExportSteamGeometry();
+        Save(scene);
+        Debug.Log("W3B: finale built. Press Play. R / G switch recorded and generated, L adds a log, B burns down.");
+    }
+
     // ---------- Fire ----------
 
     enum FireMode { Shell, Recorded, Procedural }

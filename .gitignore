@@ -18,6 +18,4 @@
 # Demo videos (large; kept in the FHEA folder)
 /Recordings/
 
-# Steam Audio 4.7.0: import it yourself, as in Week 2 Lab B (see README)
-/Assets/Plugins/SteamAudio/
-/Assets/Plugins/SteamAudio.meta
+# Steam Audio 4.7.0 is included, so the project opens ready to run.

@@ -5,12 +5,11 @@ Unity **6000.3.19f1**, spatialised with **Steam Audio 4.7.0**.
 
 ## Open the project
 
-1. Clone or download this repository.
-2. Unity Hub: **Add > Add project from disk**, choose the folder, open in **6000.3.19f1**.
-3. Import Steam Audio exactly as in Week 2 Lab B: download `steamaudio_unity_4.7.0.zip` from the
-   [Steam Audio releases](https://github.com/ValveSoftware/steam-audio/releases), then
-   **Assets > Import Package > Custom Package > SteamAudio.unitypackage**.
-4. Run **W3B > 1. Use Steam Audio**.
+1. On this page: green **Code** button > **Download ZIP** (or clone it). Unzip to a short path, e.g. `C:\Unity\W3B_FireLab`.
+2. Unity Hub: **Add > Add project from disk**, choose the folder, open in **6000.3.19f1**. The first open takes a few minutes.
+3. Open `Assets/W3B_Fire/Scenes/W3B_Student_Shell` and press Play.
+
+Steam Audio 4.7.0 is already included (Apache 2.0, (c) Valve Corporation). If sound is not spatialised, run **W3B > 1. Use Steam Audio**.
 
 ## Scenes (`Assets/W3B_Fire/Scenes`)
 
@@ -20,10 +19,11 @@ Unity **6000.3.19f1**, spatialised with **Steam Audio 4.7.0**.
 | `W3B_Student_Shell` | Students start here: room, campfire, three empty spatialised layers |
 | `W3B_Solution` | Finished recorded and procedural fires to compare |
 | `W3B_Student_Example` | What a finished student fire sounds like (build with W3B > 8) |
+| `W3B_Finale` | Everyone back together: one fire, recorded or generated. Burn down, add a log (L), change the wood and the size |
 
 ## Scripts (`Assets/W3B_Fire/Scripts`)
 
-- **Student/**: `NoiseLayer`, `EventLayer` (sculpt by ear), `MyRandomPlayer` and `MyDynamicLink` (one line of C# each).
+- **Student/**: `NoiseLayer`, `EventLayer` (sculpt by ear), `MyRandomPlayer` and `MyDynamicLink` (one line of C# each), `AddLogOnKey` (the finale's interactive line).
 - **Layers/**: finished layers, `FireRecipe` (Farnell's hissing, crackling and lapping), `ExampleDynamicLink`.
 - **Demos/**: the demo steps, including `PdRain` (a C# port of a Pure Data rain patch).
 - **Core/**: shared building blocks (`ProceduralSound`, `PdDsp` Pd-style filters, `IntensityController`).

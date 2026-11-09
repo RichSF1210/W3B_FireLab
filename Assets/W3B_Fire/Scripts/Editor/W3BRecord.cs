@@ -29,6 +29,9 @@ public static class W3BRecord
     [MenuItem("W3B/9. Record Student Example (video + sound)")]
     static void RecordStudentExample() => Begin("Assets/W3B_Fire/Scenes/W3B_Student_Example.unity", "W3B_Student_Example_Route1_vs_Route2");
 
+    [MenuItem("W3B/11. Record Finale (video + sound)")]
+    static void RecordFinale() => Begin("Assets/W3B_Fire/Scenes/W3B_Finale.unity", "W3B_Finale");
+
     static void Begin(string scenePath, string fileName)
     {
         if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
@@ -42,6 +45,12 @@ public static class W3BRecord
 
     static void EnsureAutopilot()
     {
+        var finale = Object.FindFirstObjectByType<FinaleController>();
+        if (finale != null)
+        {
+            if (finale.GetComponent<FinaleAutopilot>() == null) finale.gameObject.AddComponent<FinaleAutopilot>();
+            return;
+        }
         var seq = Object.FindFirstObjectByType<DemoSequencer>();
         if (seq != null && seq.GetComponent<DemoAutopilot>() == null) seq.gameObject.AddComponent<DemoAutopilot>();
 
