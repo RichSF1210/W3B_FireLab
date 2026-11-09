@@ -9,8 +9,9 @@ using UnityEngine;
 //              same noise: a short pitched "plink".
 //   drips    - REBUILT from Farnell's physics (ch. 38): drips arrive at random
 //              (Poisson) times; each is a tiny parabolic impact pulse plus, most
-//              of the time, a bubble that rings at 1-3 kHz, rises in pitch and
-//              dies in 10-45 ms. (The patch's original drips divided by an
+//              of the time, a bubble that rings at about 330-650 Hz, rises a
+//              little in pitch and dies in 6-16 ms. (Small bubbles ring high:
+//              1-3 kHz sounded like pings, so these model bigger, softer drips.) (The patch's original drips divided by an
 //              almost-zero slow noise, which pinned the signal at its clip
 //              limit 96% of the time, so a sharp filter whistled constantly.)
 //   rumble   - noise around 333 Hz, swelling with the droplet noise: drops
@@ -52,7 +53,7 @@ public class PdRain : ProceduralSound
         l1 = new PdLop(10000f, sr); l2 = new PdLop(10000f, sr); l3 = new PdLop(10000f, sr);
 
         master = new PdLop(12000f, sr);
-        dripHip = new PdHip(250f, sr); dripLop = new PdLop(9000f, sr);
+        dripHip = new PdHip(250f, sr); dripLop = new PdLop(4000f, sr);
         base.Start();
     }
 
@@ -63,11 +64,13 @@ public class PdRain : ProceduralSound
         dAmp[v] = Mathf.Clamp01(gauss * 1.4f - 0.2f);
         pulseLen[v] = pulseLeft[v] = Mathf.Max(8, (int)(Mathf.Lerp(0.0005f, 0.0025f, Random01()) * sampleRate));
         dBubble[v] = Random01() < 0.7f;
-        float radius = Mathf.Lerp(0.0011f, 0.0028f, Random01());              // metres
-        dFreq[v] = 3.26f / radius;                                            // Minnaert: ~1.2-3 kHz
-        float dur = Mathf.Lerp(0.012f, 0.045f, Random01());
+        // WHERE THE PITCH OF A DRIP COMES FROM: the bubble's size (Minnaert: 3.26 / radius).
+        float radius = Mathf.Lerp(0.005f, 0.010f, Random01());                // metres: 5-10 mm
+        dFreq[v] = 3.26f / radius;                                            // about 330-650 Hz
+        // WHERE ITS LENGTH COMES FROM: a short ring, so it taps rather than pings.
+        float dur = Mathf.Lerp(0.006f, 0.016f, Random01());
         dDecay[v] = Mathf.Exp(-1f / (dur * sampleRate));
-        dRise[v] = Mathf.Pow(1.6f, 1f / (dur * 4f * sampleRate));             // +60% over the ring
+        dRise[v] = Mathf.Pow(1.15f, 1f / (dur * 4f * sampleRate));            // +15% over the ring
         dEnv[v] = 1f; dAttack[v] = 1f; dPhase[v] = 0;
     }
 
@@ -109,7 +112,7 @@ public class PdRain : ProceduralSound
             {
                 dPhase[v] += dFreq[v] / sampleRate;
                 dFreq[v] *= dRise[v];
-                drp += Mathf.Sin((float)(dPhase[v] * 6.283185307179586)) * dEnv[v] * (1f - dAttack[v]) * dAmp[v] * 0.5f;
+                drp += Mathf.Sin((float)(dPhase[v] * 6.283185307179586)) * dEnv[v] * (1f - dAttack[v]) * dAmp[v] * 0.45f;
                 dEnv[v] *= dDecay[v];
                 dAttack[v] *= 0.97f;
             }
