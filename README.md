@@ -3,6 +3,11 @@
 COMSM0127 Immersive Interaction and Audio Design, Week 3 Lab B (University of Bristol).
 Unity **6000.3.19f1**, spatialised with **Steam Audio 4.7.0**.
 
+## Worksheet
+
+- [Lab worksheet (PDF)](Docs/W3-LabB_Worksheet.pdf)
+- [One-page A4 sheet (PDF)](Docs/W3-LabB_Student_Sheet_A4.pdf)
+
 ## Open the project
 
 1. On this page: green **Code** button > **Download ZIP** (or clone it). Unzip to a short path, e.g. `C:\Unity\W3B_FireLab`.
