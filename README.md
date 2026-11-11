@@ -10,9 +10,11 @@ Unity **6000.3.19f1**, spatialised with **Steam Audio 4.7.0**.
 
 ## Open the project
 
-1. On this page: green **Code** button > **Download ZIP** (or clone it). Unzip to a short path, e.g. `C:\Unity\W3B_FireLab`.
-2. Unity Hub: **Add > Add project from disk**, choose the folder, open in **6000.3.19f1**. The first open takes a few minutes.
-3. Open `Assets/W3B_Fire/Scenes/W3B_Student_Shell` and press Play. Walk with **W A S D**; hold the right mouse button to look.
+1. On this page: green **Code** button > **Download ZIP** (or clone it).
+2. **Windows: unblock the zip before extracting.** Right-click the zip > **Properties** > tick **Unblock** > **OK**. Without this, university machines block the extract ("Windows found that this file is potentially harmful") and leave an empty folder.
+3. Right-click the zip > **Extract all**. The Desktop is fine.
+4. Open `Assets/W3B_Fire/Scenes` in File Explorer and double-click **W3B_Student_Shell**. Unity opens the project with that scene (first open takes a few minutes). Unity Hub (**Add > Add project from disk**, **6000.3.19f1**) also works, but on university machines its file browser may not find your Desktop.
+5. Press Play. Walk with **W A S D**; hold the right mouse button to look.
 
 By the end of the lab you have a finished Campfire A and Campfire B in this one project.
 
