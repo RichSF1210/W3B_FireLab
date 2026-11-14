@@ -10,11 +10,14 @@ using UnityEngine;   // gives us Unity's tools: AudioSource, Random, Time and so
 //
 // HOW TO USE IT
 //   1 Under Campfire A, select a layer (e.g. Layer 2). Add Component > MyRandomPlayer.
-//   2 Lock the Inspector (padlock, top right). Drag 4 or more of your
-//     short WAV files onto "Clips". Unlock the Inspector.
+//   2 Click the padlock at the top right of the Inspector (it stays on this layer).
+//     In the Project window, select ALL your short files (click the first,
+//     Shift-click the last) and drag them onto the word "Clips" (the heading,
+//     not a row). The list fills, one row per file. Click the padlock again.
 //   3 Press Play and listen. It repeats: every play sounds identical.
 //   4 Find the TODO below. Delete the two slashes // in front of the
-//     line under it. Save (Cmd+S or Ctrl+S). Press Play again.
+//     line under it. Save (Cmd+S or Ctrl+S). Go back to Unity and wait for it
+//     to compile the C# code. Press Play again.
 //
 // WHERE THE SHAPE COMES FROM
 //   In a recording, the shape is baked in: the snap you recorded is the snap

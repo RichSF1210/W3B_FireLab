@@ -8,24 +8,28 @@ using UnityEngine;
 //   3  PROCEDURAL         FireRecipe, generated from numbers (Part B)
 // Try the same change on each. Some work on all three; some only in code.
 // Keys: 1 2 3 switch soundtrack, B = burn down, L = add a log.
+// HOW WOOD AND SIZE WORK: open FireRecipe.cs and search for "dryness" and
+// "size". Each is one number from 0 to 1 that feeds several Mathf.Lerp lines.
 // =====================================================================
 public class FinaleController : MonoBehaviour
 {
-    public enum Mode { RecordedStatic, RecordedDynamic, Procedural }
+    public enum Mode { RecordedStatic, RecordedDynamic, Procedural }   // the three soundtracks
 
     public FireController staticFire;     // plays fire_full_loop.wav on a plain loop
     public FireController recordedFire;   // hiss loop + lapping loop + random crackles
     public FireController proceduralFire; // FireRecipe
-    public FireRecipe recipe;
-    [Range(0f, 1f)] public float intensity = 0.5f;
-    public bool burnDown;
-    public Mode mode = Mode.RecordedStatic;
+    public FireRecipe recipe;             // the procedural fire's script: Wood and Size live here
+    [Range(0f, 1f)] public float intensity = 0.5f;   // one Intensity for all three fires
+    public bool burnDown;                            // B: is the fire dying over time?
+    public Mode mode = Mode.RecordedStatic;          // which soundtrack we hear now
 
-    float recordedBytes;
-    GUIStyle title, body, note, button;
+    float recordedBytes;                   // how much audio the recorded fire needs (shown under Memory)
+    GUIStyle title, body, note, button;    // text styles for the on-screen panel
 
+    // All three fires, so one change (Intensity, burn down, a log) reaches every one.
     FireController[] All => new[] { staticFire, recordedFire, proceduralFire };
 
+    // Start(): add up the size of every recording the recorded fire uses.
     void Start()
     {
         foreach (var a in recordedFire.GetComponentsInChildren<AudioSource>(true)) recordedBytes += Bytes(a.clip);
@@ -34,24 +38,30 @@ public class FinaleController : MonoBehaviour
         Apply();
     }
 
+    // Size of one clip in bytes: samples x channels x 2 bytes (16-bit audio).
     static float Bytes(AudioClip c) => c == null ? 0f : c.samples * c.channels * 2f;
 
-    public void Hear(Mode m) { mode = m; Apply(); }
+    public void Hear(Mode m) { mode = m; Apply(); }   // switch soundtrack (keys 1, 2, 3)
 
+    // Move all three fires to the same Intensity, so the comparison is fair.
     public void SetIntensity(float v)
     {
         intensity = v;
         foreach (var f in All) f.intensity = v;
     }
 
+    // B: burn down. Each fire's Intensity falls a little every second (ADAPTIVE).
     public void SetBurnDown(bool on)
     {
         burnDown = on;
         foreach (var f in All) { f.burnDown = on; f.burnDownPerSecond = 0.06f; }
     }
 
+    // L: throw on a log. Every fire gets a boost that then fades (INTERACTIVE).
+    // The real work is AddLog() in IntensityController.cs.
     public void AddLog() { foreach (var f in All) f.AddLog(); }
 
+    // Hear only the chosen fire: mute the other two and hide their flames.
     void Apply()
     {
         Mute(staticFire, mode != Mode.RecordedStatic);
@@ -59,12 +69,14 @@ public class FinaleController : MonoBehaviour
         Mute(proceduralFire, mode != Mode.Procedural);
     }
 
+    // Mute (or unmute) every Audio Source under one fire, and show or hide its visuals.
     static void Mute(FireController f, bool muted)
     {
         foreach (var a in f.GetComponentsInChildren<AudioSource>(true)) a.mute = muted;
         f.transform.Find("Visuals").gameObject.SetActive(!muted);
     }
 
+    // Update(): about 60 times a second, check the keys.
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Alpha1)) Hear(Mode.RecordedStatic);
@@ -75,6 +87,7 @@ public class FinaleController : MonoBehaviour
         if (burnDown) intensity = recordedFire.intensity;   // follow the fire as it dies
     }
 
+    // Text sizes and colours for the panel (made once).
     void Styles()
     {
         if (title != null) return;
@@ -87,6 +100,7 @@ public class FinaleController : MonoBehaviour
 
     static readonly string[] Names = { "RECORDED, STATIC: one loop, frozen", "RECORDED, DYNAMIC: Part A", "PROCEDURAL: Part B" };
 
+    // OnGUI(): draws the panel on the left of the screen, every frame.
     void OnGUI()
     {
         Styles();
@@ -124,6 +138,7 @@ public class FinaleController : MonoBehaviour
             GUILayout.Label("Size: campfire  <->  bonfire: " + recipe.size.ToString("0.00"), body);
             recipe.size = GUILayout.HorizontalSlider(recipe.size, 0f, 1f, GUILayout.Height(26));
             GUILayout.Label("New wood, new size: same script, two numbers. Nothing re-recorded.", note);
+            GUILayout.Label("How? Open FireRecipe.cs and search for dryness and size.", body);
         }
         else
         {

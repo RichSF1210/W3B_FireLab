@@ -2,6 +2,8 @@ using UnityEngine;
 
 // =====================================================================
 // DemoAutopilot: plays the W3B demo by itself (for recording, or rehearsal).
+// STUDENTS: you do not need this script. It was used to record the backup
+// videos: it presses the buttons and moves the sliders on a timer, by itself.
 // Tick "Run On Play" to watch it without recording.
 // =====================================================================
 public class DemoAutopilot : MonoBehaviour

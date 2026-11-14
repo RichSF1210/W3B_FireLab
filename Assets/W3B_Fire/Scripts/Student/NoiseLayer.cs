@@ -39,9 +39,12 @@ using UnityEngine;
 public class NoiseLayer : ProceduralSound          // ProceduralSound does the audio plumbing for us
 {
     public enum FilterType { LowPass, HighPass, BandPass }   // the three filter choices
+    [Tooltip("Low Pass keeps the lows (roar). High Pass keeps the highs (hiss). Band Pass keeps a band in the middle; only Band Pass uses Resonance.")]
     public FilterType filter = FilterType.LowPass;
+    [Tooltip("Where the filter cuts, in Hz (hertz, cycles a second). 20 = very low, 15,000 = very high.")]
     [Range(20f, 15000f)] public float cutoff = 800f;     // Hz
-    [Range(0.5f, 20f)] public float resonance = 2f;      // band-pass only: higher = narrower
+    [Tooltip("Band Pass only. With Low Pass or High Pass this does nothing. Higher = a narrower, more whistling band.")]
+    [Range(0.5f, 20f)] public float resonance = 2f;      // BAND PASS ONLY: higher = narrower. No effect on Low Pass or High Pass.
     [Range(0f, 1f)] public float wobbleDepth = 0.3f;     // how much the level moves
     [Range(0.1f, 10f)] public float wobbleSpeed = 1f;    // how fast, in wobbles per second
     [Range(0f, 1f)] public float level = 0.5f;           // volume

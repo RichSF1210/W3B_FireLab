@@ -23,17 +23,20 @@ using UnityEngine;
 // =====================================================================
 public class PdRain : ProceduralSound
 {
+    // How loud each of the four layers is (0 = off, 1 = normal, 2 = double).
     [Header("Layers")]
     [Range(0f, 2f)] public float droplets = 1f;
     [Range(0f, 2f)] public float drips = 1f;
     [Range(0f, 2f)] public float rumble = 1f;
     [Range(0f, 2f)] public float ambience = 1f;
 
-    PdBp bp1, bp2, bp3, bpRumble;
-    PdOsc o1, o2, o3;
-    PdHip h1a, h1b, h2a, h2b, h3a, h3b;
-    PdLop l1, l2, l3, master;
-    PdHip dripHip; PdLop dripLop;
+    // The Pure Data objects, rebuilt in C# (see PdDsp.cs). Names match the patch.
+    PdBp bp1, bp2, bp3, bpRumble;           // band-pass filters: very slow noise for the droplets; 333 Hz for the rumble
+    PdOsc o1, o2, o3;                       // three sine oscillators: the pitched "plinks"
+    PdHip h1a, h1b, h2a, h2b, h3a, h3b;     // high-pass filters: remove the lows from each plink
+    PdLop l1, l2, l3, master;               // low-pass filters: soften each plink, and the whole mix
+    PdHip dripHip; PdLop dripLop;           // shape the drips: no rumble below 250 Hz, no harshness above 4 kHz
+    // Up to 12 drips can sound at once ("voices"). Each array holds one value per voice.
     const int DripVoices = 12;
     readonly int[] pulseLeft = new int[DripVoices], pulseLen = new int[DripVoices];
     readonly float[] dAmp = new float[DripVoices], dEnv = new float[DripVoices], dDecay = new float[DripVoices],
@@ -42,6 +45,7 @@ public class PdRain : ProceduralSound
     readonly bool[] dBubble = new bool[DripVoices];
     int nextDrip;
 
+    // Start(): build every filter and oscillator once, then start the sound.
     protected override void Start()
     {
         int sr = AudioSettings.outputSampleRate;
@@ -57,13 +61,14 @@ public class PdRain : ProceduralSound
         base.Start();
     }
 
+    // Start one new drip on the next free voice: a random loudness, impact and bubble.
     void StartDrip()
     {
         int v = nextDrip; nextDrip = (nextDrip + 1) % DripVoices;
         float gauss = (Random01() + Random01() + Random01()) / 3f;           // roughly bell-shaped loudness
         dAmp[v] = Mathf.Clamp01(gauss * 1.4f - 0.2f);
         pulseLen[v] = pulseLeft[v] = Mathf.Max(8, (int)(Mathf.Lerp(0.0005f, 0.0025f, Random01()) * sampleRate));
-        dBubble[v] = Random01() < 0.7f;
+        dBubble[v] = Random01() < 0.7f;                                      // 70% of drips also trap a bubble
         // WHERE THE PITCH OF A DRIP COMES FROM: the bubble's size (Minnaert: 3.26 / radius).
         float radius = Mathf.Lerp(0.005f, 0.010f, Random01());                // metres: 5-10 mm
         dFreq[v] = 3.26f / radius;                                            // about 330-650 Hz
@@ -71,11 +76,14 @@ public class PdRain : ProceduralSound
         float dur = Mathf.Lerp(0.006f, 0.016f, Random01());
         dDecay[v] = Mathf.Exp(-1f / (dur * sampleRate));
         dRise[v] = Mathf.Pow(1.15f, 1f / (dur * 4f * sampleRate));            // +15% over the ring
-        dEnv[v] = 1f; dAttack[v] = 1f; dPhase[v] = 0;
+        dEnv[v] = 1f; dAttack[v] = 1f; dPhase[v] = 0;                         // start the ring at full level
     }
 
+    // Squash big numbers gently towards 1, so loud peaks never clip harshly.
     static float SoftClip(float x) => x / (1f + Mathf.Abs(x));
 
+    // One droplet voice: noise c is raised to the 8th power, so only its rare peaks
+    // survive. Each peak lets a short sine through: a plink. Its pitch moves with c.
     float Drop(float c, float spread, float centre, PdOsc osc, PdHip ha, PdHip hb, PdLop lo)
     {
         float e = c * c; e *= e; e *= e;                        // c to the 8th: sparse peaks
@@ -86,18 +94,21 @@ public class PdRain : ProceduralSound
     protected override float NextSample()
     {
         if (master == null) return 0f;
-        float n1 = Noise(), n2 = Noise(), n3 = Noise();
+        float n1 = Noise(), n2 = Noise(), n3 = Noise();          // three fresh random numbers (white noise)
 
         float g = Mathf.Lerp(2.4f, 4.0f, intensity);            // 3.2 at intensity 0.5, as in the patch
+        // Very slow, smooth random curves (band-pass at about 2 Hz), one per droplet voice.
         float c1 = bp1.Tick(n1) * g, c2 = bp2.Tick(n2) * g, c3 = bp3.Tick(n3) * g * 1.1875f;
 
+        // LAYER 1, DROPLETS: three plink voices at different pitches.
         float drops = Drop(c1, 344f, 3000f, o1, h1a, h1b, l1) * 0.01f
                     + Drop(c2, 3000f, 2000f, o2, h2a, h2b, l2) * 0.02f
                     + Drop(c3, 5000f, 2000f, o3, h3a, h3b, l3) * 0.01f;
 
-        float rum = bpRumble.Tick(n3 * c3) * 0.4f;
-        float amb = n1 * 0.007f;
+        float rum = bpRumble.Tick(n3 * c3) * 0.4f;              // LAYER 3, RUMBLE: noise around 333 Hz, swelling with the droplets
+        float amb = n1 * 0.007f;                                 // LAYER 4, AMBIENCE: a little plain noise, the distant wash
 
+        // LAYER 2, DRIPS: start a new drip at random; more often when the rain is heavier (RTPC).
         if (Random01() < Mathf.Lerp(2f, 14f, intensity) / sampleRate) StartDrip();
         float drp = 0f;
         for (int v = 0; v < DripVoices; v++)
@@ -119,6 +130,7 @@ public class PdRain : ProceduralSound
         }
         drp = dripLop.Tick(dripHip.Tick(drp)) * 0.35f;
 
+        // MIX: add the four layers. Intensity also changes the balance between them (RTPC).
         float mix = drops * droplets * 2f
                   + drp * drips * Mathf.Lerp(0.4f, 1.4f, intensity)
                   + rum * rumble * Mathf.Lerp(0.3f, 1.5f, intensity)

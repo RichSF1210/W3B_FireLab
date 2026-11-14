@@ -3,7 +3,9 @@ using UnityEngine;
 // =====================================================================
 // SampleLoopLayer  (PART A: RECORDED. No code needed.)
 // USE FOR: a looping bed, e.g. your hiss or lapping recording.
-// HOW: add to an object with an Audio Source, drag your loop into AudioClip.
+// HOW: add to a layer (it already has an Audio Source). Drag your loop onto the
+//      Audio Source's "Audio Generator" field (in older Unity it was called AudioClip).
+//      Press Play: the Console must NOT say "no clip assigned".
 // WHAT IS DYNAMIC HERE (the recording never changes, the playback does):
 //   - starts at a random point, so it never lines up the same way twice
 //   - intensity sets volume and pitch (bigger fire = louder, slightly higher)

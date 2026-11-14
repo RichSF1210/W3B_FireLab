@@ -31,6 +31,20 @@ public class FireRecipe : ProceduralSound
     [Range(0f, 2f)] public float lapping = 1f;
 
     // WHAT ONLY CODE CAN DO: change the fire itself, not just play it back.
+    // Two numbers, 0 to 1. Each feeds several Mathf.Lerp lines below (search for them):
+    //   dryness (Wood: damp oak 0 -> dry pine 1)
+    //     hiss level      damp wood steams: more hiss            Lerp(1.6, 0.4, dryness)
+    //     snap rate       dry wood snaps more often              Lerp(0.3, 1.7, dryness)
+    //     snap length     damp snaps are longer and duller       Lerp(1.8, 0.5, dryness)
+    //     snap pitch      dry snaps are higher and sharper       600-1,800 Hz up to 2,200-7,000 Hz
+    //     snap pairs      dry, resinous wood pops in clusters    Lerp(0.1, 0.6, dryness)
+    //   size (Size: campfire 0 -> bonfire 1)
+    //     roar cutoff     a bigger fire roars deeper             Lerp(1.6, 0.4, size)
+    //     gust speed      big flames swell more slowly           Lerp(5, 1, size) Hz
+    //     roar level      a bigger fire is louder                Lerp(0.4, 1.6, size)
+    //     snap pitch      bigger logs crack lower                Lerp(1.3, 0.75, size)
+    // The values were tuned by ear, not measured from real fires. Is it the wood,
+    // or the water in it? (Moisture is the bigger effect.)
     [Tooltip("0 = damp oak (few, dull snaps, more steam), 1 = dry pine (many sharp snaps).")]
     [Range(0f, 1f)] public float dryness = 0.5f;
     [Tooltip("0 = small campfire, 1 = bonfire (deeper, louder roar, slower gusts).")]

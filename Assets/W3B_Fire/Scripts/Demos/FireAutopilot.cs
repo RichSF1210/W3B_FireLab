@@ -2,6 +2,8 @@ using UnityEngine;
 
 // =====================================================================
 // FireAutopilot
+// STUDENTS: you do not need this script. It was used to record the backup
+// videos: it presses the buttons and moves the sliders on a timer, by itself.
 // Plays the Solution scene by itself for recording: the recorded fire,
 // then the generated fire, each rising from embers to a blaze while the
 // camera circles the fire so you hear Steam Audio move the sound.

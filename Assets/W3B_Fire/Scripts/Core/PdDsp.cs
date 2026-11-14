@@ -2,6 +2,8 @@ using UnityEngine;
 
 // =====================================================================
 // PdDsp: small filters that behave like their Pure Data namesakes.
+// DSP = digital signal processing: making or changing sound with maths,
+// one number (sample) at a time. A filter is DSP.
 //   PdLop  = lop~   (low-pass: keeps the lows)
 //   PdHip  = hip~   (high-pass: keeps the highs)
 //   PdBp   = bp~    (band-pass: keeps a band around a centre frequency)

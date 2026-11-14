@@ -3,6 +3,8 @@ using M = FinaleController.Mode;
 
 // =====================================================================
 // FinaleAutopilot: plays the finale by itself for recording a video.
+// STUDENTS: you do not need this script. It was used to record the backup
+// videos: it presses the buttons and moves the sliders on a timer, by itself.
 // =====================================================================
 public class FinaleAutopilot : MonoBehaviour
 {

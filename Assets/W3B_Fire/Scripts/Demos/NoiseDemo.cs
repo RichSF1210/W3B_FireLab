@@ -6,9 +6,9 @@ using UnityEngine;
 public class NoiseDemo : ProceduralSound
 {
     [Range(50f, 2000f)] public float frequency = 440f;
-    [Range(0f, 1f)] public float noiseMix = 0f;
-    [Range(50f, 20000f)] public float cutoff = 20000f;
-    public bool highPass = false;
+    [Range(0f, 1f)] public float noiseMix = 0f;         // 0 = pure sine, 1 = pure noise
+    [Range(50f, 20000f)] public float cutoff = 20000f;  // where the filter cuts, in Hz
+    public bool highPass = false;                        // off = keep the lows (rumble); on = keep the highs (hiss)
 
     double phase;
     float lowPassed;
@@ -19,10 +19,10 @@ public class NoiseDemo : ProceduralSound
         if (phase > 2.0 * System.Math.PI) phase -= 2.0 * System.Math.PI;
         float sine = (float)System.Math.Sin(phase);
 
-        float noise = Noise();
-        lowPassed += LowPassCoefficient(cutoff) * (noise - lowPassed);
-        float shaped = highPass ? noise - lowPassed : lowPassed;
+        float noise = Noise();                                   // white noise: every frequency at once
+        lowPassed += LowPassCoefficient(cutoff) * (noise - lowPassed);   // a low-pass filter (DSP): smooths away the highs
+        float shaped = highPass ? noise - lowPassed : lowPassed;   // high-pass = the noise minus its lows
 
-        return Mathf.Lerp(sine, shaped, noiseMix);
+        return Mathf.Lerp(sine, shaped, noiseMix);             // blend from sine to shaped noise
     }
 }

@@ -10,6 +10,16 @@ using UnityEngine;
 //   one question in NextSample(): "what is the next sample?"
 //   Because the sound still comes out of a normal Audio Source, Steam Audio
 //   spatialises it exactly like a recording.
+//   This is DSP (digital signal processing): making or changing sound with
+//   maths, one number (sample) at a time.
+// TWO WAYS TO MAKE SOUND FROM CODE IN UNITY:
+//   1 A streamed AudioClip with a read callback (AudioClip.Create below):
+//     Unity asks this script for a buffer of samples; we fill it. THIS PROJECT.
+//   2 OnAudioFilterRead(float[] data, int channels): a method you add to any
+//     script on an object with an Audio Source; Unity hands you each buffer to
+//     fill or change. Common in tutorials online. Same idea, different hook.
+// ONE PROCEDURAL SCRIPT PER LAYER: each one takes over its layer's Audio Source,
+//   so a second one on the same layer would silently replace the first.
 // HELPERS YOU CAN USE IN YOUR OWN SCRIPT:
 //   Noise()                 white noise, a random number from -1 to 1
 //   Random01()              a random number from 0 to 1
@@ -30,6 +40,11 @@ public abstract class ProceduralSound : IntensityLayer
     {
         sampleRate = AudioSettings.outputSampleRate;
         rng = new System.Random();
+
+        // Two procedural scripts on one layer? Only one can be heard: say so.
+        if (GetComponents<ProceduralSound>().Length > 1)
+            Debug.LogWarning(name + ": has more than one procedural script (e.g. NoiseLayer and BurstLayer). " +
+                             "Only one can be heard. Put each one on its own layer.");
 
         var source = GetComponent<AudioSource>();
         // Two seconds of "clip" that is never stored: Unity asks us for samples as it plays.

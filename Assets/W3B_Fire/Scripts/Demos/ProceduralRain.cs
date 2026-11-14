@@ -1,5 +1,8 @@
 using UnityEngine;
 
+// ProceduralRain: an earlier, simpler rain made from noise and sine waves.
+// Not used in the W3B_Demo scene now (PdRain replaced it). Kept as a short,
+// readable example you can put on a layer and try.
 // DEMO 3: rain from noise and sine waves, driven by one Intensity slider.
 // Two layers:
 //   bed   - band-limited noise: the wash of distant rain

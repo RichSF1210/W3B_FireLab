@@ -10,26 +10,26 @@ using UnityEngine;
 // =====================================================================
 public class SineDemo : ProceduralSound
 {
-    [Range(50f, 2000f)] public float frequency = 440f;
-    [Range(1, 16)] public int bitDepth = 16;
-    [Range(1, 64)] public int holdSamples = 1;
+    [Range(50f, 2000f)] public float frequency = 440f;   // the note, in Hz (cycles a second). 440 = the note A
+    [Range(1, 16)] public int bitDepth = 16;             // how finely each number is measured (up and down)
+    [Range(1, 64)] public int holdSamples = 1;           // repeat each number N times = a lower sample rate (side to side)
 
-    double phase;
-    int held;
-    float heldValue;
+    double phase;       // where we are in the wave: 0 to 2 pi (one full cycle)
+    int held;           // how many more samples to repeat the current number
+    float heldValue;    // the number being repeated
 
     protected override float NextSample()
     {
-        phase += 2.0 * System.Math.PI * frequency / sampleRate;
-        if (phase > 2.0 * System.Math.PI) phase -= 2.0 * System.Math.PI;
-        float s = (float)System.Math.Sin(phase);
+        phase += 2.0 * System.Math.PI * frequency / sampleRate;   // move along the wave by one sample
+        if (phase > 2.0 * System.Math.PI) phase -= 2.0 * System.Math.PI;   // after one full cycle, start again
+        float s = (float)System.Math.Sin(phase);                   // the smooth sine wave: a number from -1 to 1
 
-        if (--held <= 0)
+        if (--held <= 0)                                           // time for a new number?
         {
             held = holdSamples;
-            float steps = Mathf.Pow(2f, bitDepth - 1);
-            heldValue = Mathf.Round(s * steps) / steps;
+            float steps = Mathf.Pow(2f, bitDepth - 1);             // steps each side of zero: 2 bits = 2, 16 bits = 32,768
+            heldValue = Mathf.Round(s * steps) / steps;            // round to the nearest step: the staircase
         }
-        return heldValue;
+        return heldValue;                                          // the number Unity plays
     }
 }

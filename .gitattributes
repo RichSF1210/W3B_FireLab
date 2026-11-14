@@ -1,0 +1,7 @@
+# Steam Audio's native plugins: never let git touch line endings or content.
+Assets/Plugins/SteamAudio/Binaries/** binary
+*.bundle/** binary
+*.wav binary
+*.dll binary
+*.so binary
+*.a binary
